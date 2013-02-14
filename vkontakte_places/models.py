@@ -14,7 +14,7 @@ import time
 
 log = logging.getLogger('vkontakte_places')
 
-class VkontaktePlacesManager(VkontakteManager):
+class PlacesManager(VkontakteManager):
 
     def api_call(self, *args, **kwargs):
 
@@ -39,7 +39,7 @@ class VkontaktePlacesManager(VkontakteManager):
             else:
                 country = Country.objects.get(remote_id=kwargs['country'])
 
-        instances = super(VkontaktePlacesManager, self).get(*args, **kwargs)
+        instances = super(PlacesManager, self).get(*args, **kwargs)
 
         if country:
             for instance in instances:
@@ -47,14 +47,14 @@ class VkontaktePlacesManager(VkontakteManager):
 
         return instances
 
-class VkontaktePlacesIDModel(VkontakteIDModel):
+class PlacesModel(VkontakteIDModel):
     class Meta:
         abstract = True
 
     methods_namespace = 'places'
 
     def parse(self, response):
-        super(VkontaktePlacesIDModel, self).parse(response)
+        super(PlacesModel, self).parse(response)
 
         # this field becouse in different queries different name of field in response:
         # http://vk.com/developers.php?oid=-1&p=places.getCities
@@ -62,7 +62,7 @@ class VkontaktePlacesIDModel(VkontakteIDModel):
         if 'title' in response and not self.name:
             self.name = response['title']
 
-class Country(VkontaktePlacesIDModel):
+class Country(PlacesModel):
     class Meta:
         db_table = 'vkontakte_places_country'
         verbose_name = _('Vkontakte country')
@@ -73,7 +73,7 @@ class Country(VkontaktePlacesIDModel):
 
     name = models.CharField(max_length=50)
 
-    remote = VkontaktePlacesManager(remote_pk=('remote_id',), methods={
+    remote = PlacesManager(remote_pk=('remote_id',), methods={
         'get': 'getCountries',
         'get_by_ids': 'getCountryById',
     })
@@ -81,7 +81,7 @@ class Country(VkontaktePlacesIDModel):
     def __unicode__(self):
         return self.name
 
-class City(VkontaktePlacesIDModel):
+class City(PlacesModel):
     class Meta:
         db_table = 'vkontakte_places_city'
         verbose_name = _('Vkontakte city')
@@ -97,7 +97,7 @@ class City(VkontaktePlacesIDModel):
     area = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
 
-    remote = VkontaktePlacesManager(remote_pk=('remote_id',), methods={
+    remote = PlacesManager(remote_pk=('remote_id',), methods={
         'get': 'getCities',
         'get_by_ids': 'getCityById',
     })
@@ -110,7 +110,7 @@ class City(VkontaktePlacesIDModel):
             name += [self.area]
         return ', '.join(name)
 
-class Region(VkontaktePlacesIDModel):
+class Region(PlacesModel):
     class Meta:
         db_table = 'vkontakte_places_region'
         verbose_name = _('Vkontakte region')
@@ -122,7 +122,7 @@ class Region(VkontaktePlacesIDModel):
     country = models.ForeignKey(Country, related_name='regions', help_text=u'Страна')
     name = models.CharField(max_length=50)
 
-    remote = VkontaktePlacesManager(remote_pk=('remote_id',), methods={'get': 'getRegions'})
+    remote = PlacesManager(remote_pk=('remote_id',), methods={'get': 'getRegions'})
 
     def __unicode__(self):
         return self.name
