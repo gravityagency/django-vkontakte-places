@@ -1,1 +1,2 @@
+simplejson
 django-vkontakte-api>=0.3.4
