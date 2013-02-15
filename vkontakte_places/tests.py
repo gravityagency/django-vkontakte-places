@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from models import City, Country, Region
+from factories import CityFactory, CountryFactory
 import simplejson as json
 
 class VkontaktePlacesTest(TestCase):
@@ -15,7 +16,7 @@ class VkontaktePlacesTest(TestCase):
                 {"cid":1130701,"title":"Москва","area":"Верхошижемский район","region":"Кировская область"}
             ]}
             '''
-        country = Country.objects.create(remote_id=1)
+        country = CountryFactory.create(remote_id=1)
         instance = City(country=country)
         instance.parse(json.loads(response)['response'][0])
         instance.save()
@@ -36,7 +37,7 @@ class VkontaktePlacesTest(TestCase):
 
         self.assertEqual(City.objects.count(), 0)
 
-        country = Country.objects.create(remote_id=1)
+        country = CountryFactory.create(remote_id=1)
 
         City.remote.fetch(country=country.remote_id)
         self.assertEqual(City.objects.count(), 18)
