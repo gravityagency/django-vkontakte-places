@@ -4,7 +4,6 @@ from django.db.models.query import QuerySet
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.fields import FieldDoesNotExist
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
 from datetime import datetime, date
 from vkontakte_api.utils import api_call
 from vkontakte_api import fields
@@ -64,9 +63,8 @@ class PlacesModel(VkontakteIDModel):
 
 class Country(PlacesModel):
     class Meta:
-        db_table = 'vkontakte_places_country'
-        verbose_name = _('Vkontakte country')
-        verbose_name_plural = _('Vkontakte countries')
+        verbose_name = u'Страна Вконтакте'
+        verbose_name_plural = u'Страны Вконтакте'
         ordering = ['name']
 
     remote_pk_field = 'cid'
@@ -83,9 +81,8 @@ class Country(PlacesModel):
 
 class City(PlacesModel):
     class Meta:
-        db_table = 'vkontakte_places_city'
-        verbose_name = _('Vkontakte city')
-        verbose_name_plural = _('Vkontakte cities')
+        verbose_name = u'Город Вконтакте'
+        verbose_name_plural = u'Города Вконтакте'
         ordering = ['name']
 
     remote_pk_field = 'cid'
@@ -112,9 +109,8 @@ class City(PlacesModel):
 
 class Region(PlacesModel):
     class Meta:
-        db_table = 'vkontakte_places_region'
-        verbose_name = _('Vkontakte region')
-        verbose_name_plural = _('Vkontakte regions')
+        verbose_name = u'Регион Вконтакте'
+        verbose_name_plural = u'Регионы Вконтакте'
         ordering = ['name']
 
     remote_pk_field = 'region_id'
@@ -122,7 +118,9 @@ class Region(PlacesModel):
     country = models.ForeignKey(Country, related_name='regions', help_text=u'Страна')
     name = models.CharField(max_length=50)
 
-    remote = PlacesManager(remote_pk=('remote_id',), methods={'get': 'getRegions'})
+    remote = PlacesManager(remote_pk=('remote_id',), methods={
+        'get': 'getRegions',
+    })
 
     def __unicode__(self):
         return self.name
