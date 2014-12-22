@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
-from django.db import models
-from django.db.models.query import QuerySet
-from django.contrib.contenttypes.models import ContentType
-from django.db.models.fields import FieldDoesNotExist
-from django.core.exceptions import ValidationError
-from datetime import datetime, date
-from vkontakte_api.utils import api_call
-from vkontakte_api import fields
-from vkontakte_api.models import VkontakteManager, VkontakteIDModel
 import logging
-import time
+
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.fields import FieldDoesNotExist
+from django.db.models.query import QuerySet
+from django.utils.encoding import python_2_unicode_compatible
+from vkontakte_api import fields
+from vkontakte_api.api import api_call
+from vkontakte_api.models import VkontakteManager, VkontakteIDModel
+
 
 log = logging.getLogger('vkontakte_places')
+
 
 class PlacesManager(VkontakteManager):
 
@@ -46,11 +48,13 @@ class PlacesManager(VkontakteManager):
 
         return instances
 
+
 class PlacesModel(VkontakteIDModel):
-    class Meta:
-        abstract = True
 
     methods_namespace = 'places'
+
+    class Meta:
+        abstract = True
 
     def parse(self, response):
         super(PlacesModel, self).parse(response)
@@ -61,11 +65,9 @@ class PlacesModel(VkontakteIDModel):
         if 'title' in response and not self.name:
             self.name = response['title']
 
+
+@python_2_unicode_compatible
 class Country(PlacesModel):
-    class Meta:
-        verbose_name = u'Страна Вконтакте'
-        verbose_name_plural = u'Страны Вконтакте'
-        ordering = ['name']
 
     remote_pk_field = 'cid'
 
@@ -76,14 +78,16 @@ class Country(PlacesModel):
         'get_by_ids': 'getCountryById',
     })
 
-    def __unicode__(self):
+    class Meta:
+        verbose_name = u'Страна Вконтакте'
+        verbose_name_plural = u'Страны Вконтакте'
+
+    def __str__(self):
         return self.name
 
+
+@python_2_unicode_compatible
 class City(PlacesModel):
-    class Meta:
-        verbose_name = u'Город Вконтакте'
-        verbose_name_plural = u'Города Вконтакте'
-        ordering = ['name']
 
     remote_pk_field = 'cid'
 
@@ -99,7 +103,11 @@ class City(PlacesModel):
         'get_by_ids': 'getCityById',
     })
 
-    def __unicode__(self):
+    class Meta:
+        verbose_name = u'Город Вконтакте'
+        verbose_name_plural = u'Города Вконтакте'
+
+    def __str__(self):
         name = [self.name]
         if self.region:
             name += [self.region]
@@ -107,11 +115,9 @@ class City(PlacesModel):
             name += [self.area]
         return ', '.join(name)
 
+
+@python_2_unicode_compatible
 class Region(PlacesModel):
-    class Meta:
-        verbose_name = u'Регион Вконтакте'
-        verbose_name_plural = u'Регионы Вконтакте'
-        ordering = ['name']
 
     remote_pk_field = 'region_id'
 
@@ -122,5 +128,9 @@ class Region(PlacesModel):
         'get': 'getRegions',
     })
 
-    def __unicode__(self):
+    class Meta:
+        verbose_name = u'Регион Вконтакте'
+        verbose_name_plural = u'Регионы Вконтакте'
+
+    def __str__(self):
         return self.name
