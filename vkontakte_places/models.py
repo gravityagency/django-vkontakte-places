@@ -10,6 +10,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from vkontakte_api import fields
 from vkontakte_api.api import api_call
 from vkontakte_api.models import VkontakteManager, VkontakteIDModel
+from vkontakte_api.decorators import fetch_all
 
 
 log = logging.getLogger('vkontakte_places')
@@ -47,6 +48,10 @@ class PlacesManager(VkontakteManager):
                 instance.country = country
 
         return instances
+
+    @fetch_all
+    def fetch(self, *args, **kwargs):
+        return super(PlacesManager, self).fetch(*args, **kwargs)
 
 
 class PlacesModel(VkontakteIDModel):
