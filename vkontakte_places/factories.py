@@ -1,12 +1,16 @@
 from models import City, Country
 import factory
 
-class CityFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = City
 
-    remote_id = factory.Sequence(lambda n: n)
+class CityFactory(factory.DjangoModelFactory):
+    remote_id = factory.Sequence(lambda n: n + 1)
+
+    class Meta:
+        model = City
+
 
 class CountryFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Country
+    remote_id = factory.Sequence(lambda n: n + 1)
 
-    remote_id = factory.Sequence(lambda n: n)
+    class Meta:
+        model = Country

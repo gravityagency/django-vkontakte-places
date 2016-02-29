@@ -4,6 +4,7 @@ from models import City, Country, Region
 from factories import CityFactory, CountryFactory
 import simplejson as json
 
+
 class VkontaktePlacesTest(TestCase):
 
     def test_parse_city(self):
